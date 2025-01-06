@@ -88,6 +88,7 @@ def chunk_text(text, chunk_size=500):
 def upsert_pdf_to_pinecone(pdf_folder, index):
     """
     Trích xuất dữ liệu từ tất cả file PDF trong thư mục, tạo embeddings và upsert vào Pinecone.
+    Chỉ thêm dữ liệu mới nếu chưa tồn tại trong Pinecone.
     :param pdf_folder: Thư mục chứa các file PDF.
     :param index: Đối tượng Pinecone Index.
     """
@@ -108,22 +109,34 @@ def upsert_pdf_to_pinecone(pdf_folder, index):
             # Tạo embeddings cho các đoạn văn bản
             embeddings = model.encode(chunks)
 
-            # Chuẩn bị dữ liệu để thêm vào Pinecone
-            data_to_upsert = [
-                {
-                    "id": f"{pdf_file}-{i}",
-                    "values": embeddings[i].tolist(),
-                    "metadata": {"text": chunks[i], "source": pdf_file}
-                }
-                for i in range(len(chunks))
-            ]
+            # Chuẩn bị dữ liệu để kiểm tra và thêm vào Pinecone
+            data_to_upsert = []
+            for i, chunk in enumerate(chunks):
+                chunk_id = f"{pdf_file}-{i}"
 
-            # Thêm dữ liệu vào Pinecone
-            index.upsert(vectors=data_to_upsert)
-            print(f"Đã thêm {len(chunks)} đoạn văn bản từ {pdf_file} vào Pinecone.")
+                # Kiểm tra xem ID đã tồn tại trong Pinecone hay chưa
+                existing = index.fetch(ids=[chunk_id])  # Lấy thông tin từ Pinecone với ID cụ thể
+                if chunk_id in existing['vectors']:
+                    print(f"Chunk ID {chunk_id} đã tồn tại, bỏ qua.")
+                    continue
+
+                # Nếu chưa tồn tại, thêm vào danh sách cần upsert
+                data_to_upsert.append({
+                    "id": chunk_id,
+                    "values": embeddings[i].tolist(),
+                    "metadata": {"text": chunk, "source": pdf_file}
+                })
+
+            # Thêm dữ liệu vào Pinecone nếu có dữ liệu mới
+            if data_to_upsert:
+                index.upsert(vectors=data_to_upsert)
+                print(f"Đã thêm {len(data_to_upsert)} đoạn văn bản từ {pdf_file} vào Pinecone.")
+            else:
+                print(f"Không có dữ liệu mới từ {pdf_file} để thêm vào Pinecone.")
+
 
 # 5. Gọi hàm để xử lý dữ liệu
-pdf_folder = "C:\\Users\\deodi\\OneDrive\\Desktop\\rag\\pdf"  # Thay bằng đường dẫn của bạn
+pdf_folder = "E:\\PLP\\Personalized-Learning-Path\\RAG\\pdf"  # Thay bằng đường dẫn của bạn
 upsert_pdf_to_pinecone(pdf_folder, index)
 
 print("Hoàn tất việc thêm dữ liệu PDF vào Pinecone.")
