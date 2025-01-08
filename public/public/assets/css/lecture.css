@@ -1,0 +1,519 @@
+body {
+    font-size: 16px;
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.5;
+}
+
+ul,
+ul li {
+    list-style: none;
+    padding: 0;
+}
+
+.w-30 {
+    width: 30%;
+}
+
+.w-70 {
+    width: 70%;
+}
+
+:hover a {
+    text-decoration: none;
+}
+
+#header {
+    background: #23282d;
+    color: #adadad;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    position: fixed;
+    z-index: 99;
+    width: 100vw;
+}
+
+a#logo {
+    display: block;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-right: 20px;
+}
+
+a#logo img {
+    height: 22px;
+    display: block;
+}
+
+#course-name {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#course-name i {
+    font-size: 24px;
+}
+
+#course-name a {
+    font-size: 16px;
+    display: block;
+    color: #ffffff;
+    padding-left: 15px;
+}
+
+#course-name:hover a {
+    color: #f5f5f5;
+}
+
+#time-spend {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+#time-spend i {
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+h1.lecture-name {
+    padding: 2px 10px;
+    margin: 0;
+    color: #fff;
+    font-size: 16px;
+}
+
+#content {
+    padding-top: 62px;
+}
+
+
+/* ========== SHOW VIDEO =========== */
+
+#show-lecture {
+    width: 38px;
+}
+
+#show-lecture .outline-body {
+    display: none;
+}
+
+#show-lecture h3 {
+    display: none;
+}
+
+.open-outline #show-lecture {
+    flex: 25%;
+}
+
+.open-outline #show-lecture .outline-body {
+    display: block;
+}
+
+.open-outline #show-lecture h3 {
+    display: block;
+    flex: 1 1;
+}
+
+#show-video {
+    flex: calc(100vw - 55px);
+}
+
+#play-video {
+    background-color: #bcbcbc;
+}
+
+.open-outline #show-video {
+    flex: 75%;
+    padding-right: 25vw;
+}
+
+#btn-toggle-outline::after {
+    content: "\f0d9";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    color: #b8aeae;
+    font-size: 18px;
+    left: 12px;
+    top: 2px;
+}
+
+.open-outline #btn-toggle-outline::after {
+    content: "\f0da";
+}
+
+
+/* ========== SHOW LECTURE=========== */
+
+#show-lecture {
+    background: #f2f3f5;
+    position: fixed;
+    width: 25vw;
+    top: 62px;
+    right: 0px;
+}
+
+.toggle-lecture {
+    position: relative;
+}
+
+.part-info::after {
+    content: "\f0d7";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    color: #b8aeae;
+    font-size: 18px;
+    right: 10px;
+    top: 10px;
+}
+
+.open-lecture .part-info::after {
+    content: "\f0d8";
+}
+
+.outline-head {
+    /* padding-top: 15px;
+    padding-bottom: 15px; */
+    background: #434343;
+}
+
+#btn-toggle-outline {
+    position: relative;
+    background: #333;
+    border-radius: 0px;
+    color: #fff;
+    padding: 16px;
+    outline: none;
+}
+
+.outline-body {
+    /* height: 500px; */
+    height: calc(100vh - 100px);
+    overflow: auto;
+    border-left: 1px solid #f2f3f5;
+}
+
+.outline-head h3 {
+    padding: 7px 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    margin-bottom: 0;
+}
+
+ul.table-of-content .part-info {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 15px;
+    cursor: pointer;
+}
+
+.part-info {
+    position: relative;
+    border-bottom: 1px solid #dedfe0;
+}
+
+.part-info .part-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #29303b;
+    padding-right: 30px;
+}
+
+.part-info .part-duration {
+    font-size: 12px;
+    color: #29303b;
+}
+
+.part-info .arrow {
+    position: absolute;
+    right: 10px;
+    top: 15px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+ul.list-lecture li .lecture-item {
+    display: flex;
+}
+
+ul.list-lecture {
+    background: #fff;
+    display: none;
+    font-size: 14px;
+}
+
+ul.list-lecture li {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 15px;
+}
+
+ul.list-lecture li.current-lecture {
+    border-left: 2px solid #f00;
+    background: #f8ebeb;
+}
+
+ul.list-lecture li.current-lecture:hover {
+    background: #f8ebeb;
+}
+
+ul.list-lecture li:hover {
+    background: #f2f3f5;
+}
+
+ul.list-lecture li a {
+    color: #505763;
+    display: block
+}
+
+ul.list-lecture .lecture-info {
+    padding-left: 15px;
+    flex: auto;
+}
+
+.lecture-mark {
+    font-size: 14px;
+    padding-top: 4px;
+}
+
+.lecture-done {
+    color: #297c04;
+}
+
+.lecture-info .lecture-duration {
+    color: #505763;
+    font-size: 12px;
+}
+
+.info {
+    padding: 10px;
+}
+
+.info-head {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+/* reviews   */
+
+.reviews-date {
+    font-size: 13px!important;
+    color: #555;
+}
+
+.reviews-course .message {
+    font-size: 15px;
+}
+
+.verifyed {
+    color: #22b345;
+    font-size: 11px;
+    padding: 5px 0px 5px 22px;
+    font-weight: 600;
+}
+
+.verifyed::before {
+    content: '\f560';
+    font-family: "Font Awesome 5 Free";
+    position: absolute;
+    font-weight: 900;
+    left: 22px;
+    font-size: 12px;
+    color: #22b345;
+}
+
+.show-star {
+    font-size: 13px;
+    padding: 5px 0px;
+}
+
+.show-star i {
+    color: #f4c150;
+}
+
+.show-star .num-vote {
+    color: #686f7a;
+    padding-left: 8px;
+}
+
+.reviews-info .reviews-author {
+    font-weight: 600;
+    padding-top: 25px;
+    padding-bottom: 20px;
+}
+
+.reviews-item {
+    padding-bottom: 20px;
+}
+
+.list-text-reviews li .reviews-item {
+    background: #f2f3f5;
+    font-size: 16px;
+    color: #1c1e21;
+    border-radius: 20px;
+    padding: 20px 15px 20px;
+}
+
+ul.list-text-reviews li {
+    margin-bottom: 20px;
+}
+
+ul.list-text-reviews .show-star {
+    font-size: 12px;
+    padding: 10px 0px;
+}
+
+ul.list-text-reviews .student-info {
+    margin-top: 20px;
+}
+
+ul.list-text-reviews .student-info .fullname {
+    font-weight: 600;
+}
+
+ul.list-text-reviews .student-info .reviews-time {
+    color: #606161;
+}
+
+
+/* RATING */
+
+.rate-wp {
+    margin: 15px 0px;
+    display: flex;
+}
+
+.rate-wp .ratebar,
+.rate-wp .title {
+    display: inline-block!important;
+}
+
+.rate-wp .name {
+    color: #868686!important;
+    margin-left: 10px;
+    margin-bottom: 0!important;
+}
+
+.ratings-wp .list-item li {
+    margin-bottom: 5px;
+}
+
+.ratings-wp .list-item li:last-child {
+    margin-bottom: 0!important;
+}
+
+.rate-wp .point-wp {
+    flex: 20%;
+    text-align: center;
+}
+
+.rate-wp .ratings-wp {
+    flex: 80%;
+}
+
+.rate-wp .point-wp .title {
+    font-size: 45px!important;
+    font-weight: 700;
+    padding: 0!important;
+    text-align: center;
+    line-height: 50px;
+    margin-bottom: 10px;
+}
+
+.rate-wp .point-wp .desc {
+    font-size: 14px;
+    font-style: italic;
+    color: #999;
+    line-height: 18px;
+}
+
+.ratings-wp .ratings-gauge,
+.ratings-wp .ratings-star {
+    float: left;
+}
+
+.ratings-wp .ratings-percent {
+    float: right;
+    width: 10%;
+    font-size: 14px;
+    line-height: 18px;
+    color: #0093a9;
+}
+
+.ratings-wp .ratings-gauge {
+    width: 80%;
+}
+
+.ratings-wp .ratings-star {
+    width: 10%;
+    text-align: center;
+    line-height: 12px;
+}
+
+.ratings-wp .ratings-gauge .ratings-gauge-bg {
+    position: relative;
+    width: 100%;
+    height: 15px;
+    background: #ddd;
+    border-radius: 3px;
+}
+
+.ratings-wp .ratings-gauge .ratings-gauge-fill {
+    position: absolute;
+    height: 15px;
+    top: 0;
+    left: 0;
+    background: #ffc107;
+    border-radius: 5px;
+}
+
+.ratings-wp .ratings-star .list-item li {
+    float: left;
+}
+
+.ratings-wp .ratings-star .list-item li:nth-child(1),
+.ratings-wp .ratings-star .list-item li:nth-child(2),
+.ratings-wp .ratings-star .list-item li:nth-child(3) {
+    color: #07ADC6;
+}
+
+.ratings-star .list-item {
+    padding: 0px 10px;
+}
+
+.ratings-star .list-item li {
+    margin: 0px 3px;
+    font-size: 16px;
+}
+
+.ratings-star .list-item li {
+    line-height: 21px!important;
+}
+
+.ratings-wp .ratings-star .list-item li p {
+    line-height: 10px;
+}
+
+.ratings-wp .ratings-star .list-item li p i {
+    font-size: 13px!important;
+}
+
+#btn-change,
+#btn-cancel {
+    color: #ff2d2d;
+    cursor: pointer;
+}
+
+#btn-change:hover,
+#btn-cancel:hover {
+    color: #ff2d2d;
+}
+
+#sm-edit-review,
+#cancel-review,
+#success-review {
+    display: none;
+}

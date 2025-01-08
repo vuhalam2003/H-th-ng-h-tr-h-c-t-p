@@ -1,0 +1,177 @@
+html{
+    font-size: 62.5%;
+}
+h3{
+    font-size: 2.8rem;
+}
+.box .box-body {
+    padding-top: 1rem!important;
+}
+.course-more-info{
+    font-size: 1.4rem;
+}
+.section-title{
+    font-size: 2.5rem;
+    padding: 1.5rem 0px;
+}
+ #road-maps .subheading {
+    /*font-size: 1.9rem;*/
+    padding: 3rem 0px;
+}
+
+#footer{
+    padding: 4rem 0;
+}
+
+section{
+    padding: 5rem 0px;
+}
+.rate{
+    font-size: 1.2rem;
+}
+.open-faq{
+    padding: 1.5rem 0px;
+}
+
+.form-control{
+    padding: 0.5rem 1.2rem;
+    font-size: 1.6rem;
+}
+.btn{
+    padding: 0.4rem 1rem;
+    font-size: 1.6rem;
+    white-space: nowrap;
+
+}
+@media (max-width: 992px) {
+    #show-video {
+        padding-right: 0px!important;
+    }
+    ul#main-menu li a {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+    #cta-login, #go-class, #user-login {
+        font-size: 12px;
+        padding: 2px 10px;
+    }
+    #road-maps .subheading{
+        padding: 1rem 0px;
+        font-size: 1.5rem;
+
+    }
+    #road-maps h1{
+        font-size: 2.5rem;
+    }
+    section {
+        padding: 3rem 0px;
+    }
+    
+}
+
+
+
+/*  Extra small devices (portrait phones, less than 576px)
+ No media query for `xs` since this is the default in Bootstrap
+ Small devices (landscape phones, 576px and up) */
+
+@media (min-width: 576px) {
+    .box .box-body {
+        padding-top: 2rem!important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    ul#list-usp li{
+        flex: 100%;
+    }
+    #logo {
+        height: 20px;
+    }
+    section{
+        padding: 3rem 0px;
+    }
+    #road-maps .subheading {
+        font-size: 1.9rem;
+        padding: 1.5rem 0px;
+    }
+    #course-value li{
+        width: 100%;
+    }
+    #intro-head h1.course-title{
+        font-size: 2.4rem;
+    }
+    #intro-head .course-desc, #road-maps p{
+        font-size: 1.6rem;
+    }
+    #middle-header {
+        padding-top: 5px;
+        padding-bottom: 10px;
+    }
+    #road-maps h1{
+        font-size: 2.4rem;
+    }
+    .btn-unitop {
+        display: inline-block;
+        padding: 0.6rem 1.8rem;
+        font-size: 1.2rem;
+    }
+    .lecture-page a#logo{
+        display: none;
+    }
+    .lecture-page #header{
+        padding: 0px 0px;
+    }
+    .lecture-page #content{
+        padding-top: 3rem;
+    }
+    h1.lecture-name{
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        padding: 0.2rem 0;
+        width: 90%;
+    }
+    #course-name{
+        padding: 0.5rem 0px;
+    }
+    
+    /* #info_course{*/
+    /*    order: 2;*/
+    /*}*/
+    /*#reg-_course{*/
+    /*    order: 1;*/
+        
+    /*}*/
+}
+
+
+/*  Medium devices (tablets, 768px and up) */
+
+@media (min-width: 768px) {
+
+    .box .box-body {
+        padding-top: 3rem!important;
+    }
+    /*#info_course{*/
+    /*    order: 2;*/
+    /*}*/
+    /*#reg-course{*/
+    /*    order: 1;*/
+    /*}*/
+}
+
+
+/* Large devices (desktops, 992px and up) */
+
+@media (min-width: 992px) {
+    /* section {
+        padding-top: 3rem!important;
+        padding-bottom: 3rem!important;
+    } */
+}
+
+
+/* Extra large devices (large desktops, 1200px and up)  */
+
+@media (min-width: 1200px) {}
