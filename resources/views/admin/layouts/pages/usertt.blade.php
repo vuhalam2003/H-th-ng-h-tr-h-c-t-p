@@ -35,7 +35,7 @@
                 <!-- general form elements -->
                 <div class="card card-primary">
                     <div class="card-header">
-                        <h3 class="card-title">Edit khóa học</h3> <!-- Thay "Quick Example" thành "Edit khóa học" -->
+                        <h3 class="card-title">Thống tin sinh viên</h3> <!-- Thay "Quick Example" thành "Edit khóa học" -->
                     </div>
                     <!-- /.card-header -->
                     <!-- form start -->
