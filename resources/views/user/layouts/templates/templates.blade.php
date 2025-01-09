@@ -91,7 +91,7 @@
                         <ul id="account">
                             @if(auth()->check() && auth()->user()->role == 2)
                                 <!-- Nếu người dùng đã đăng nhập và có role = 1, hiển thị tên người dùng -->
-                                <li><a id="cta-login" href="#">{{ auth()->user()->name }}</a></li>
+                                <li><a id="cta-login" href="{{ route('user.id', ['id' => auth()->user()->id]) }}">{{ auth()->user()->name }}</a></li>
                                 {{-- <li>Xin chào, </li> --}}
                             @else
                                 <!-- Nếu chưa đăng nhập hoặc role khác 1, hiển thị nút đăng nhập -->

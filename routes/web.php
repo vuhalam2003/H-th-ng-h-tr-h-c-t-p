@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KhoaHocController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 
 /*
@@ -39,7 +40,9 @@ Route::get('/showDetail/{khoaHoc}', [KhoaHocController::class, 'showDetail'])->n
 
 Route::get('/search', [KhoaHocController::class, 'search'])->name('searchKhoaHoc');
 Route::get('/playlist/{playlistId}', [KhoaHocController::class, 'getPlaylistVideos1']);
+Route::get('/user/{id}', [AuthController::class, 'userLog'])->name('user.id');
 Route::get('/playlist/{playlistId}/{id}', [KhoaHocController::class, 'getPlaylistVideos2']);
+Route::post('/user/update/{id}', [AuthController::class, 'update1'])->name('user.update');
 
 // Route dashboard chỉ dành cho admin
 Route::middleware(['admin'])->group(function () {
