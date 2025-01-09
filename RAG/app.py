@@ -41,7 +41,7 @@ def process_question(question):
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": "Bearer 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",
+                "Authorization": "Bearer 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",
                 "HTTP-Referer": "localhost",
                 "X-Title": "localhost",
             },

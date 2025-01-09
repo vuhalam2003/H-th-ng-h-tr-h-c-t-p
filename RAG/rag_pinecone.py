@@ -6,7 +6,7 @@ from pdfplumber import open as pdf_open
 import pdfplumber
 from key import OPENROUTER_KEY, PINECONE_KEY
 
-os.environ['PINECONE_API_KEY'] = "pcsk_227kYr_9np2QvPFmRmZD7UkWeUEs6fEfxYom68oXtuZRafV2enbSdzUo2rcQe2y8uVdFT9"
+os.environ['PINECONE_API_KEY'] = "pcsk_2HE9W8_GjEWT4BPBgoS9sBxm919xY6kT7MgKgjiMDUgCBtBzgrnjuK5RN5jYDJuv6FPsT6"
 
 import os
 from pinecone import Pinecone
@@ -136,7 +136,7 @@ def upsert_pdf_to_pinecone(pdf_folder, index):
 
 
 # 5. Gọi hàm để xử lý dữ liệu
-pdf_folder = "E:\\PLP\\Personalized-Learning-Path\\RAG\\pdf"  # Thay bằng đường dẫn của bạn
+pdf_folder = "C:\\xampp\\htdocs\\web\\RAG\\pdf"  # Thay bằng đường dẫn của bạn
 upsert_pdf_to_pinecone(pdf_folder, index)
 
 print("Hoàn tất việc thêm dữ liệu PDF vào Pinecone.")
