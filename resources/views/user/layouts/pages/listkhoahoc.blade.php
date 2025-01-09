@@ -153,8 +153,8 @@
                                         </a>
                                         <div class="course-info">
                                             <h3>
-                                                <a href="course/html-css-21-ngay-thanh-thao-xay-dung-giao-dien-web-thuc-te-tu-ban-thiet-ke-photoshop/intro"
-                                                    title="Html Css 21 Ngày - Thành thạo xây dựng giao diện web thực tế từ bản thiết kế Photoshop"
+                                                <a href="{{ route('khoa_hoc.detail', ['khoaHoc' => $khoaHoc->id]) }}"
+                                                    title=""
                                                     class="course-title">
                                                     {{ $khoaHoc->ten }}
                                                 </a>

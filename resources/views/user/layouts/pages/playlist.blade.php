@@ -129,15 +129,53 @@
                         <div id="info-course">
                             <nav id="tab-large" class="d-none d-lg-block">
                                 <!-- d-block d-md-none -->
-                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                                    <a class="nav-item nav-link" id="" data-toggle="tab" href="#nav-large-1"
-                                        role="tab" aria-selected="false">Hỏi đáp</a>
-                                    {{-- <a class="nav-item nav-link active" id="" data-toggle="tab"
-                                        href="#nav-large-2" role="tab" aria-selected="true">Tài liệu</a> --}}
-                                    <!-- <a class="nav-item nav-link" id="" data-toggle="tab" href="#nav-large-3" role="tab">Phần mềm</a> -->
-                                    {{-- <a class="nav-item nav-link" id="" data-toggle="tab"
-                                        href="#nav-large-4" role="tab" aria-selected="false">Reviews</a> --}}
+                                <div id="rag-service" style="margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <h3>Trợ lý AI - Hỏi đáp</h3>
+                                    <div style="margin-bottom: 10px;">
+                                        <textarea id="user-question" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+                                    </div>
+                                    <button id="submit-question" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                                        Gửi câu hỏi
+                                    </button>
+                                    <div id="response-area" style="margin-top: 20px; display: none;">
+                                        <h4>Câu trả lời:</h4>
+                                        <p id="ai-response" style="background: #f9f9f9; padding: 10px; border-radius: 5px;"></p>
+                                    </div>
                                 </div>
+                                <script>
+                                    // Sự kiện khi người dùng nhấn nút gửi câu hỏi
+                                    document.getElementById('submit-question').addEventListener('click', async () => {
+                                        const question = document.getElementById('user-question').value.trim();
+                                        const responseArea = document.getElementById('response-area');
+                                        const aiResponse = document.getElementById('ai-response');
+
+                                        if (!question) {
+                                            alert('Vui lòng nhập câu hỏi!');
+                                            return;
+                                        }
+
+                                        aiResponse.textContent = "Đang xử lý câu hỏi...";
+                                        responseArea.style.display = 'block';
+
+                                        try {
+                                            const response = await fetch('http://127.0.0.1:8000/ask', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ question }),
+                                            });
+
+                                            if (response.ok) {
+                                                const data = await response.json();
+                                                aiResponse.textContent = data.answer || "Không tìm thấy câu trả lời.";
+                                            } else {
+                                                aiResponse.textContent = "Lỗi: Không thể xử lý câu hỏi. Vui lòng thử lại!";
+                                            }
+                                        } catch (error) {
+                                            aiResponse.textContent = "Lỗi kết nối. Vui lòng kiểm tra mạng!";
+                                            console.error(error);
+                                        }
+                                    });
+                                </script>
                             </nav>
                             <div class="tab-content d-none d-lg-block" id="nav-tabContent">
                                 <div class="tab-pane fade" id="nav-large-1" role="tabpanel">

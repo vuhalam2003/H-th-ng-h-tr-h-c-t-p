@@ -1,28 +1,31 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
-import numpy as np
+import json
+import requests
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone
-import requests
-import json
+from gevent.pywsgi import WSGIServer
 
-os.environ['PINECONE_API_KEY'] = "pcsk_227kYr_9np2QvPFmRmZD7UkWeUEs6fEfxYom68oXtuZRafV2enbSdzUo2rcQe2y8uVdFT9"
 
-# Load model SentenceTransformer
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Ứng dụng Flask đang chạy thành công!"
+# Cấu hình API key và môi trường
+os.environ['PINECONE_API_KEY'] = "pcsk_2HE9W8_GjEWT4BPBgoS9sBxm919xY6kT7MgKgjiMDUgCBtBzgrnjuK5RN5jYDJuv6FPsT6"
+
+# Tải model và kết nối Pinecone
 model = SentenceTransformer('all-MiniLM-L6-v2')
-
-# Kết nối với Pinecone
-api_key = os.environ.get('PINECONE_API_KEY')
-pc = Pinecone(api_key=api_key)
+pc = Pinecone(api_key=os.environ.get('PINECONE_API_KEY'))
 index_name = "huggingface-embed"
 index = pc.Index(index_name)
 
 # Hàm truy vấn DB và lấy context phù hợp
 def get_relevant_context(question, top_k=5):
-    # Tạo embedding cho câu hỏi
     question_embedding = model.encode(question).tolist()
-    # Truy vấn Pinecone
     results = index.query(vector=question_embedding, top_k=top_k, include_metadata=True)
-    # Trích xuất context
     context = [match['metadata']['text'] for match in results['matches']]
     return "\n".join(context)
 
@@ -32,13 +35,9 @@ def process_question(question):
         return "Câu hỏi không được để trống."
 
     try:
-        # Truy vấn DB để lấy context
         context = get_relevant_context(question)
-
-        # Gộp câu hỏi và context
         prompt = f"Context:\n{context}\n\nQuestion: {question}\nAnswer:"
 
-        # Gửi yêu cầu đến API
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
@@ -52,10 +51,8 @@ def process_question(question):
             })
         )
 
-        # Xử lý phản hồi
         if response.status_code == 200:
             response_data = response.json()
-            print("Phản hồi từ API:", response_data)
             answer = response_data.get("choices", [{}])[0].get("message", {}).get("content", "Không tìm thấy câu trả lời.")
             return answer
         else:
@@ -63,11 +60,27 @@ def process_question(question):
     except Exception as e:
         return f"Đã xảy ra lỗi: {str(e)}"
 
-# Ví dụ sử dụng dịch vụ
+# Khởi tạo Flask app
+app = Flask(__name__)
+CORS(app)  # Hỗ trợ CORS để gọi API từ frontend
+
+@app.route('/ask', methods=['POST'])
+def ask_question():
+    try:
+        # Lấy câu hỏi từ yêu cầu POST
+        data = request.json
+        question = data.get("question", "")
+        
+        if not question:
+            return jsonify({"error": "Câu hỏi không được để trống."}), 400
+
+        # Xử lý câu hỏi
+        answer = process_question(question)
+        return jsonify({"answer": answer})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Chạy ứng dụng
 if __name__ == "__main__":
-    while True:
-        user_question = input("Nhập câu hỏi của bạn (hoặc gõ 'exit' để thoát): ")
-        if user_question.lower() == 'exit':
-            break
-        response = process_question(user_question)
-        print(f"Trợ lý: {response}\n")
+    http_server = WSGIServer(("127.0.0.1", 8000), app)
+    http_server.serve_forever()

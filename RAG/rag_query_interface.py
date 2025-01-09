@@ -7,7 +7,7 @@ from tkinter import messagebox, scrolledtext
 import requests
 import json
 
-os.environ['PINECONE_API_KEY'] = "pcsk_227kYr_9np2QvPFmRmZD7UkWeUEs6fEfxYom68oXtuZRafV2enbSdzUo2rcQe2y8uVdFT9"
+os.environ['PINECONE_API_KEY'] = "pcsk_2HE9W8_GjEWT4BPBgoS9sBxm919xY6kT7MgKgjiMDUgCBtBzgrnjuK5RN5jYDJuv6FPsT6"
 
 # Load model SentenceTransformer
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -50,7 +50,7 @@ def send_question():
         response = requests.post(
             url="https://openrouter.ai/api/v1/chat/completions",
             headers={
-                "Authorization": "Bearer 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",
+                "Authorization": "Bearer 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",
                 "HTTP-Referer": "localhost",
                 "X-Title": "localhost",
             },
