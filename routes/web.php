@@ -44,6 +44,9 @@ Route::get('/user/{id}', [AuthController::class, 'userLog'])->name('user.id');
 Route::get('/playlist/{playlistId}/{id}', [KhoaHocController::class, 'getPlaylistVideos2']);
 Route::post('/user/update/{id}', [AuthController::class, 'update1'])->name('user.update');
 
+Route::post('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
+
+
 // Route dashboard chỉ dành cho admin
 Route::middleware(['admin'])->group(function () {
     

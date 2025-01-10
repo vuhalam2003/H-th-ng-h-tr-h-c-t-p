@@ -12,6 +12,7 @@
     <base href="https://unitop.vn/">
 
     <!-- Sử dụng asset() trong Laravel với public/ trước asset/ -->
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="{{ asset('public/assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('public/assets/fonts/fontawesome/css/all.css') }}">
     <link
@@ -127,55 +128,90 @@
 
 
                         <div id="info-course">
-                            <nav id="tab-large" class="d-none d-lg-block">
-                                <!-- d-block d-md-none -->
-                                <div id="rag-service" style="margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
-                                    <h3>Trợ lý AI - Hỏi đáp</h3>
-                                    <div style="margin-bottom: 10px;">
-                                        <textarea id="user-question" placeholder="Nhập câu hỏi của bạn..." style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
-                                    </div>
-                                    <button id="submit-question" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-                                        Gửi câu hỏi
-                                    </button>
-                                    <div id="response-area" style="margin-top: 20px; display: none;">
-                                        <h4>Câu trả lời:</h4>
-                                        <p id="ai-response" style="background: #f9f9f9; padding: 10px; border-radius: 5px;"></p>
-                                    </div>
-                                </div>
-                                <script>
-                                    // Sự kiện khi người dùng nhấn nút gửi câu hỏi
-                                    document.getElementById('submit-question').addEventListener('click', async () => {
-                                        const question = document.getElementById('user-question').value.trim();
-                                        const responseArea = document.getElementById('response-area');
-                                        const aiResponse = document.getElementById('ai-response');
+    <nav id="tab-large" class="d-none d-lg-block">
+        <div id="rag-service" style="margin-top: 20px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; background-color: #f4f4f9;">
+            <h3 style="text-align: center; color: #4a4a8c;">Trợ lý AI - Hỏi đáp</h3>
+            <div style="margin-bottom: 10px;">
+                <textarea id="user-question" placeholder="Nhập câu hỏi của bạn..." 
+                          style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;"></textarea>
+            </div>
+            <button id="submit-question" style="padding: 10px 20px; background-color: #4a4a8c; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                Gửi câu hỏi
+            </button>
+            <div id="conversation-area" style="margin-top: 20px; max-height: 400px; overflow-y: auto; padding: 10px; background-color: #fff; border-radius: 5px;">
+                <!-- Nội dung đối đáp sẽ được thêm tại đây -->
+            </div>
+        </div>
+    </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+    document.getElementById('submit-question').addEventListener('click', async () => {
+        const question = document.getElementById('user-question').value.trim();
+        const conversationArea = document.getElementById('conversation-area');
 
-                                        if (!question) {
-                                            alert('Vui lòng nhập câu hỏi!');
-                                            return;
-                                        }
+        if (!question) {
+            alert('Vui lòng nhập câu hỏi!');
+            return;
+        }
 
-                                        aiResponse.textContent = "Đang xử lý câu hỏi...";
-                                        responseArea.style.display = 'block';
+        // Hiển thị câu hỏi của người dùng
+        const userMessage = document.createElement('div');
+        userMessage.className = 'user-message';
+        userMessage.textContent = question;
+        userMessage.style.color = '#4a4a8c';
+        userMessage.style.background = '#e6e6ff';
+        userMessage.style.padding = '10px';
+        userMessage.style.borderRadius = '5px';
+        userMessage.style.marginBottom = '10px';
+        conversationArea.appendChild(userMessage);
 
-                                        try {
-                                            const response = await fetch('http://127.0.0.1:8000/ask', {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ question }),
-                                            });
+        document.getElementById('user-question').value = ''; // Xóa ô nhập liệu
 
-                                            if (response.ok) {
-                                                const data = await response.json();
-                                                aiResponse.textContent = data.answer || "Không tìm thấy câu trả lời.";
-                                            } else {
-                                                aiResponse.textContent = "Lỗi: Không thể xử lý câu hỏi. Vui lòng thử lại!";
-                                            }
-                                        } catch (error) {
-                                            aiResponse.textContent = "Lỗi kết nối. Vui lòng kiểm tra mạng!";
-                                            console.error(error);
-                                        }
-                                    });
-                                </script>
+        // Tạo tin nhắn "Đang xử lý"
+        const aiMessage = document.createElement('div');
+        aiMessage.className = 'ai-message';
+        aiMessage.textContent = "Đang xử lý câu hỏi...";
+        aiMessage.style.color = '#4a4a8c';
+        aiMessage.style.background = '#f4f4f9';
+        aiMessage.style.padding = '10px';
+        aiMessage.style.borderRadius = '5px';
+        aiMessage.style.marginBottom = '10px';
+        conversationArea.appendChild(aiMessage);
+
+        conversationArea.scrollTop = conversationArea.scrollHeight; // Cuộn xuống cuối
+
+        try {
+            const response = await fetch('http://127.0.0.1:8000/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const markdownResponse = document.createElement('div');
+                markdownResponse.className = 'ai-message';
+                markdownResponse.innerHTML = marked.parse(data.answer || "Không tìm thấy câu trả lời.");
+                markdownResponse.style.color = '#333';
+                markdownResponse.style.background = '#f9f9f9';
+                markdownResponse.style.padding = '10px';
+                markdownResponse.style.borderRadius = '5px';
+                markdownResponse.style.marginBottom = '10px';
+                aiMessage.remove(); // Xóa tin nhắn "Đang xử lý"
+                conversationArea.appendChild(markdownResponse);
+            } else {
+                aiMessage.textContent = "Lỗi: Không thể xử lý câu hỏi. Vui lòng thử lại!";
+            }
+        } catch (error) {
+            aiMessage.textContent = "Lỗi kết nối. Vui lòng kiểm tra mạng!";
+            console.error(error);
+        }
+
+        conversationArea.scrollTop = conversationArea.scrollHeight; // Cuộn xuống cuối
+    });
+</script>
+
                             </nav>
                             <div class="tab-content d-none d-lg-block" id="nav-tabContent">
                                 <div class="tab-pane fade" id="nav-large-1" role="tabpanel">

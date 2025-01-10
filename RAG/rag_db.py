@@ -1,148 +1,147 @@
-from flask import Flask, request, jsonify
-import mysql.connector
 import json
 import requests
 import re
-from decimal import Decimal
+import gevent
 from gevent.pywsgi import WSGIServer
+from flask import Flask, request, jsonify
+import mysql.connector
+import time
+import google.generativeai as genai
+from google.generativeai import GenerationConfig
 
+
+genai.configure(api_key="AIzaSyCQw-HzZhaIHPkKQ9mPXsx7yLCfLTUbkaQ")
+
+
+# Tạo danh sách khóa học tĩnh
+COURSES = [
+    {"id": 1, "name": "Cấu trúc dữ liệu và giải thuật"},
+    {"id": 2, "name": "An toàn bảo mật thông tin"},
+    {"id": 3, "name": "Hệ điều hành"},
+    {"id": 4, "name": "Lập trình Java"},
+    {"id": 5, "name": "Kiến trúc máy tính"},
+    {"id": 6, "name": "Nhập môn học máy và khai phá dữ liệu"},
+    {"id": 7, "name": "Mạng máy tính"},
+    {"id": 8, "name": "Lập trình hướng đối tượng"},
+    {"id": 9, "name": "Phân tích thiết kế hệ thống"},
+    {"id": 10, "name": "Toán rời rạc"},
+    {"id": 11, "name": "Lập trình C++"},
+    {"id": 12, "name": "Cơ sở dữ liệu"},
+    {"id": 13, "name": "Lập trình mạng"},
+    {"id": 14, "name": "Lập trình nhúng"},
+    {"id": 15, "name": "Quản trị dự án CNTT"}
+]
 
 app = Flask(__name__)
 
-def connect_db():
-    """Kết nối cơ sở dữ liệu MySQL."""
-    return mysql.connector.connect(
-        host="localhost",
-        user="root",          # Thay bằng thông tin của bạn
-        password="",          # Thay bằng thông tin của bạn
-        database="htkdtm"     # Tên cơ sở dữ liệu
-    )
+# Kết nối cơ sở dữ liệu MySQL
+conn = mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="",
+    database="htkdtm"
+)
+cursor = conn.cursor()
 
-def get_users_from_db(user_ids):
-    """Lấy thông tin người dùng từ bảng `users` theo danh sách user_id."""
-    try:
-        conn = connect_db()
-        cursor = conn.cursor()
-        query = "SELECT id, name, GPA, role, desired_job FROM users WHERE id IN (%s)" % ','.join(['%s'] * len(user_ids))
-        cursor.execute(query, tuple(user_ids))
-        users = cursor.fetchall()
-        cursor.close()
-        conn.close()
+def generate_prompt(user_id, desired_job):
+    """
+    Tạo prompt để gửi đến LLM.
+    """
+    user_context = {"user_id": user_id, "desired_job": desired_job}
+    course_names = [course["name"] for course in COURSES]
 
-        users_list = []
-        for user in users:
-            users_list.append({
-                "id": user[0],
-                "name": user[1],
-                "GPA": float(user[2]) if isinstance(user[2], Decimal) else user[2],
-                "role": user[3],
-                "desired_job": user[4]
-            })
-        return users_list
-    except Exception as e:
-        print(f"Đã xảy ra lỗi khi lấy dữ liệu từ DB: {str(e)}")
-        return []
-
-def get_courses_from_db():
-    """Lấy danh sách các khóa học từ bảng `khoa_hoc`."""
-    try:
-        conn = connect_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, ten FROM khoa_hoc")
-        courses = cursor.fetchall()
-        cursor.close()
-        conn.close()
-
-        return {course[1]: course[0] for course in courses}
-    except Exception as e:
-        print(f"Đã xảy ra lỗi khi lấy dữ liệu từ bảng `khoa_hoc`: {str(e)}")
-        return {}
-
-def generate_prompt(users):
-    """Tạo prompt để gửi đến LLM."""
-    courses = get_courses_from_db()
     prompt = f"""Context:
-Người dùng:
-{json.dumps(users, indent=4)}
+User:
+{json.dumps(user_context, indent=4)}
 
-Khóa học:
-{json.dumps(list(courses.keys()), indent=4)}
+Courses:
+{json.dumps(course_names, indent=4)}
 
 Question:
-    Dựa trên thông tin trong context, hãy trả về một file JSON danh sách các khóa học phù hợp cho từng user. 
-    Mỗi user nên có ít nhất một khóa học, dựa trên:
-    - desired_job, hãy đưa ra khóa học phù hợp với vị trí công việc mong muốn này
-    - chỉ dựa vào danh sách khóa học có trong bảng khoa_hoc
-    - mỗi người ít nhất 5 khóa học
-    - course_id là dạng số nguyên như ở trong bảng khoa_hoc
-    - không trả về bất cứ thông tin nào khác ngoài JSON
-    Chỉ trả về kết quả dưới dạng JSON như sau, không giải thích, không phân tích:
-    [
+    Dựa trên thông tin trong context, hãy trả về một danh sách các khóa học phù hợp cho user dựa trên công việc mong muốn. 
+    - Phản hồi càng ngắn càng tốt
+    - Chỉ dựa vào danh sách khóa học có trong mục "Courses"
+    - course_id phải nằm ở dạng số nguyên
+    - Kết quả phải có dạng JSON:
     {{"user_id": user_id, "course_ids": [course_ids]}}
-    ]"""
+"""
     return prompt
 
 def fetch_courses_from_llm(prompt):
-    """Gửi prompt đến LLM và nhận lại danh sách khóa học phù hợp."""
+    """
+    Gửi prompt đến Google Generative AI và nhận lại danh sách khóa học phù hợp.
+    """
+    while True:
+        try:
+            # Sử dụng mô hình cụ thể để tạo nội dung
+            model = genai.GenerativeModel("gemini-1.5-flash")  # Thay thế bằng mô hình bạn muốn
+            response = model.generate_content(prompt)
+
+            if response and hasattr(response, 'text'):
+                response_text = response.text
+                print(f"Phản hồi từ service: {response_text}")
+
+                # Tìm JSON được bao quanh bởi dấu ```json
+                match = re.search(r"```json(.*?)```", response_text, re.S)
+                if match:
+                    json_content = match.group(1).strip()
+
+                    # Làm sạch JSON: loại bỏ \n và các ký tự escape
+                    cleaned_json_content = json_content.replace("\\n", "").replace("\\\"", "\"").strip()
+
+                    # Trả về nội dung JSON đã giải mã
+                    return json.loads(cleaned_json_content)
+                else:
+                    print(f"Không tìm thấy JSON trong phản hồi. Nội dung: {response_text}")
+            else:
+                print("Phản hồi từ service không hợp lệ hoặc rỗng.")
+        except Exception as e:
+            print(f"Đã xảy ra lỗi khi gọi Google Generative AI: {str(e)}")
+
+        print("Thử lại...")
+        time.sleep(1)
+
+def insert_courses_to_db(user_id, course_ids):
+    """
+    Chèn danh sách khóa học vào bảng `user_khoa_hoc`.
+    """
     try:
-        response = requests.post(
-            url="https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": "Bearer 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",
-                "HTTP-Referer": "localhost",
-                "X-Title": "localhost"
-            },
-            data=json.dumps({
-                "model": "meta-llama/llama-3.1-405b-instruct:free",
-                "messages": [{"role": "user", "content": prompt}]
-            })
+        # Chuyển đổi ID khóa học thành các bản ghi SQL
+        records = [(user_id, course_id, 1) for course_id in course_ids]
+
+        # Chèn hàng loạt vào cơ sở dữ liệu
+        cursor.executemany(
+            "INSERT INTO user_khoa_hoc (user_id, khoa_hoc_id, goi_y, created_at, updated_at) VALUES (%s, %s, %s, NOW(), NOW())",
+            records
         )
-
-        if response.status_code == 200:
-            response_data = response.text
-            match = re.search(r"```json(.*?)```", response_data, re.S)
-            if match:
-                json_content = match.group(1).strip()
-                cleaned_json_content = json_content.replace("\\n", "").replace("\\\"", "\"").strip()
-                return json.loads(cleaned_json_content)
-        return []
-    except Exception as e:
-        print(f"Đã xảy ra lỗi khi gọi LLM: {str(e)}")
-        return []
-
-def insert_courses_to_db(course_data):
-    """Chèn danh sách khóa học vào bảng `user_khoa_hoc`."""
-    try:
-        conn = connect_db()
-        cursor = conn.cursor()
-        for user in course_data:
-            user_id = user["user_id"]
-            course_ids = user["course_ids"]
-            for course_id in course_ids:
-                cursor.execute(
-                    "INSERT INTO user_khoa_hoc (user_id, khoa_hoc_id, goi_y, created_at, updated_at) VALUES (%s, %s, %s, NOW(), NOW())",
-                    (user_id, course_id, 1)
-                )
         conn.commit()
-        cursor.close()
-        conn.close()
+        print(f"Đã chèn thành công {len(records)} bản ghi.")
     except Exception as e:
         print(f"Đã xảy ra lỗi khi chèn dữ liệu: {str(e)}")
 
-@app.route('/update_courses', methods=['POST'])
-def update_courses():
-    """API để xử lý khi cập nhật `desired_job`."""
-    user_ids = request.json.get("user_ids", [])
-    if not user_ids:
-        return jsonify({"error": "user_ids không được để trống"}), 400
+@app.route('/recommend_courses', methods=['POST'])
+def recommend_courses():
+    """
+    API để gợi ý khóa học cho user dựa trên công việc mong muốn.
+    """
+    data = request.json
+    user_id = data.get("user_id")
+    desired_job = data.get("desired_job")
 
-    users = get_users_from_db(user_ids)
-    prompt = generate_prompt(users)
+    if not user_id or not desired_job:
+        return jsonify({"error": "user_id và desired_job là bắt buộc."}), 400
+
+    # Tạo prompt và lấy danh sách khóa học từ LLM
+    prompt = generate_prompt(user_id, desired_job)
     course_data = fetch_courses_from_llm(prompt)
-    insert_courses_to_db(course_data)
 
-    return jsonify({"message": "Đã xử lý thành công."}), 200
+    if course_data:
+        insert_courses_to_db(course_data["user_id"], course_data["course_ids"])
+        return jsonify({"message": "Khóa học đã được gợi ý thành công.", "data": course_data})
+    else:
+        return jsonify({"error": "Không thể gợi ý khóa học."}), 500
 
-if __name__ == "__main__":
-    http_server = WSGIServer(("127.0.0.1", 5000), app)
+if __name__ == '__main__':
+    http_server = WSGIServer(("0.0.0.0", 5000), app)
+    print("Service is running on http://0.0.0.0:5000")
     http_server.serve_forever()

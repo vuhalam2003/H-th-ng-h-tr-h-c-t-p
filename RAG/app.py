@@ -6,15 +6,12 @@ import requests
 from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone
 from gevent.pywsgi import WSGIServer
+import google.generativeai as genai
 
-
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    return "Ứng dụng Flask đang chạy thành công!"
 # Cấu hình API key và môi trường
-os.environ['PINECONE_API_KEY'] = "pcsk_2HE9W8_GjEWT4BPBgoS9sBxm919xY6kT7MgKgjiMDUgCBtBzgrnjuK5RN5jYDJuv6FPsT6"
+os.environ['PINECONE_API_KEY'] = "pcsk_3r4guQ_EjFGTwXJknMDeF2aVa8vaERaa76jaoVLtaxzUeHzTAF7EoqYJuVXe42ZPXGUyya"
+genai.configure(api_key="AIzaSyCQw-HzZhaIHPkKQ9mPXsx7yLCfLTUbkaQ")
+
 
 # Tải model và kết nối Pinecone
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -22,6 +19,19 @@ pc = Pinecone(api_key=os.environ.get('PINECONE_API_KEY'))
 index_name = "huggingface-embed"
 index = pc.Index(index_name)
 
+# Hàm tạo prompt giống với cách bên file dưới
+def generate_prompt(context, question):
+    """
+    Tạo prompt cho trợ lý học tập dựa trên ngữ cảnh và câu hỏi.
+    """
+    prompt = f"""Ngữ cảnh:
+{context}
+
+Câu hỏi:
+{question}
+Câu trả lời:"""
+    return prompt
+gen_model = genai.GenerativeModel(model_name="gemini-1.5-flash", system_instruction= "Bạn là một trợ lý hỗ trợ học tập cho sinh viên khoa học máy tính")
 # Hàm truy vấn DB và lấy context phù hợp
 def get_relevant_context(question, top_k=5):
     question_embedding = model.encode(question).tolist()
@@ -35,28 +45,20 @@ def process_question(question):
         return "Câu hỏi không được để trống."
 
     try:
+        # Lấy ngữ cảnh liên quan từ Pinecone
         context = get_relevant_context(question)
-        prompt = f"Context:\n{context}\n\nQuestion: {question}\nAnswer:"
 
-        response = requests.post(
-            url="https://openrouter.ai/api/v1/chat/completions",
-            headers={
-                "Authorization": "Bearer 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",
-                "HTTP-Referer": "localhost",
-                "X-Title": "localhost",
-            },
-            data=json.dumps({
-                "model": "meta-llama/llama-3.1-405b-instruct:free",
-                "messages": [{"role": "user", "content": prompt}]
-            })
-        )
+        # Tạo prompt dựa trên ngữ cảnh và câu hỏi
+        prompt = generate_prompt(context, question)
 
-        if response.status_code == 200:
-            response_data = response.json()
-            answer = response_data.get("choices", [{}])[0].get("message", {}).get("content", "Không tìm thấy câu trả lời.")
-            return answer
+        # Gửi prompt đến Google Generative AI
+        response = gen_model.generate_content(prompt)
+
+        # Lấy câu trả lời từ response
+        if response and hasattr(response, 'text'):
+            return response.text.strip()
         else:
-            return f"Lỗi API: Mã lỗi {response.status_code}, Thông báo: {response.text}"
+            return "Không tìm thấy câu trả lời."
     except Exception as e:
         return f"Đã xảy ra lỗi: {str(e)}"
 
@@ -70,7 +72,7 @@ def ask_question():
         # Lấy câu hỏi từ yêu cầu POST
         data = request.json
         question = data.get("question", "")
-        
+
         if not question:
             return jsonify({"error": "Câu hỏi không được để trống."}), 400
 

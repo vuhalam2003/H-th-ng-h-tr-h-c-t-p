@@ -5,6 +5,96 @@
     .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6{
         font-weight: 600;
     }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+    }
+    
+    #rag-service {
+        margin: 20px auto;
+        padding: 20px;
+        max-width: 600px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    #rag-service h3 {
+        color: #4b4b4b;
+        text-align: center;
+    }
+    
+    textarea#user-question {
+        width: 100%;
+        height: 80px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+    
+    button#submit-question {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    
+    button#submit-question:hover {
+        background-color: #45a049;
+    }
+    
+    #response-area {
+        margin-top: 20px;
+    }
+    
+    #response-area h4 {
+        color: #333;
+    }
+    
+    #ai-response {
+        background-color: #f1f1f1;
+        color: #000;
+        padding: 10px;
+        border-radius: 5px;
+        white-space: pre-wrap;
+    }#conversation-area {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .user-message {
+        background-color: #d1e7dd;
+        color: #0f5132;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 10px;
+        text-align: right; /* Tin nhắn của người dùng sẽ canh phải */
+        max-width: 70%;
+        margin-left: auto;
+    }
+    
+    .ai-message {
+        background-color: #f8d7da;
+        color: #842029;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 10px;
+        text-align: left; /* Tin nhắn của AI sẽ canh trái */
+        max-width: 70%;
+        margin-right: auto;
+    }
     
     body {
         font-size: 1.6rem;

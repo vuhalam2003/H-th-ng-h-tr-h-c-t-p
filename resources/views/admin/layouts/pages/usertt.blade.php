@@ -119,7 +119,59 @@
         </div><!-- /.container-fluid -->
     </div>
 </section>
+<section class="content">
+    @if(session('success'))
+        <div class="alert alert-success" id="success-message">
+            {{ session('success') }}
+        </div>
+    @endif
 
+    @if(session('error'))
+        <div class="alert alert-danger" id="error-message">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if(session('recommended_courses') && session('recommended_courses')->isNotEmpty())
+<div class="card card-success mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Khóa học gợi ý</h3>
+    </div>
+    <div class="card-body">
+        <ul>
+            @foreach(session('recommended_courses') as $course)
+                <li>{{ $course->ten }}</li>
+            @endforeach
+        </ul>
+    </div>
+</div>
+@else
+<div class="card card-warning mt-4">
+    <div class="card-header">
+        <h3 class="card-title">Thông báo</h3>
+    </div>
+    <div class="card-body">
+        <p>Không có khóa học phù hợp cho công việc mong muốn hiện tại.</p>
+    </div>
+</div>
+@endif
+</section>
+
+<script>
+    // Ẩn thông báo sau 4 giây
+    setTimeout(function () {
+        var successMessage = document.getElementById('success-message');
+        var errorMessage = document.getElementById('error-message');
+
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+
+        if (errorMessage) {
+            errorMessage.style.display = 'none';
+        }
+    }, 4000); // 4000 ms = 4 giây
+</script>
 @endsection
 @push('scripts')
     <script>
