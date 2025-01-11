@@ -41,10 +41,15 @@ Route::get('/showDetail/{khoaHoc}', [KhoaHocController::class, 'showDetail'])->n
 Route::get('/search', [KhoaHocController::class, 'search'])->name('searchKhoaHoc');
 Route::get('/playlist/{playlistId}', [KhoaHocController::class, 'getPlaylistVideos1']);
 Route::get('/user/{id}', [AuthController::class, 'userLog'])->name('user.id');
-Route::get('/playlist/{playlistId}/{id}', [KhoaHocController::class, 'getPlaylistVideos2']);
-Route::post('/user/update/{id}', [AuthController::class, 'update1'])->name('user.update');
+Route::get('/playlist/{playlistId}/{id}', [KhoaHocController::class, 'getPlaylistVideos2'])->name('open.list');
+Route::post('/user/update1/{id}', [AuthController::class, 'update1'])->name('user.update1');
 
 Route::post('/user/update/{id}', [UserController::class, 'update'])->name('user.update');
+
+Route::get('/user/list/{id}', [AuthController::class, 'List'])->name('user.list');
+Route::get('/user/goi_y/{id}', [AuthController::class, 'goi_yList'])->name('user.goi_y');
+
+
 
 
 // Route dashboard chỉ dành cho admin

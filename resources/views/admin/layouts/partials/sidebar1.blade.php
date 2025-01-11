@@ -103,6 +103,41 @@
               </li> --}}
             </ul>
           </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+              Đang học
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('user.list', ['id' => $user->id]) }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Đang học</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+              Gợi ý học
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{{ route('user.goi_y', ['id' => $user->id]) }}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Gợi ý học</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           {{-- <li class="nav-item">
             <a href="../widgets.html" class="nav-link">
               <i class="nav-icon fas fa-th"></i>

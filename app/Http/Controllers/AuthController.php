@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserKhoaHoc;
 use App\Models\KhoaHoc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -113,5 +114,19 @@ class AuthController extends Controller
 
         // Chuyển hướng với thông báo thành công
         return redirect()->route('user.id', $user->id)->with('success', 'Thông tin đã được cập nhật!');
+    }
+
+    public function list($id){
+        $user = User::find($id);
+        $khoaHocs = UserKhoaHoc::where('user_id', $user->id)->get();
+        // dd($khoaHocs);
+        return view('admin.layouts.pages.listdanghoc', compact('khoaHocs','user')); // Trả về view với dữ liệu khóa học
+    }
+
+    public function goi_yList($id){
+        $user = User::find($id);
+        $khoaHocs = UserKhoaHoc::where('user_id', $user->id)->where('goi_y', 1)->get();
+        // dd($khoaHocs);
+        return view('admin.layouts.pages.listdanghoc', compact('khoaHocs','user')); // Trả về view với dữ liệu khóa học
     }
 }
